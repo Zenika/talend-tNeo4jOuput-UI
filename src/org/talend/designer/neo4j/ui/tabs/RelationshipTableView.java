@@ -1,0 +1,181 @@
+package org.talend.designer.neo4j.ui.tabs;
+
+import java.util.Arrays;
+
+import javax.crypto.spec.OAEPParameterSpec;
+
+import org.eclipse.jface.viewers.ComboBoxCellEditor;
+import org.eclipse.jface.viewers.ComboBoxViewerCellEditor;
+import org.eclipse.jface.viewers.IBaseLabelProvider;
+import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Table;
+import org.talend.commons.ui.swt.advanced.dataeditor.AbstractDataTableEditorView;
+import org.talend.commons.ui.swt.advanced.dataeditor.ExtendedToolbarView;
+import org.talend.commons.ui.swt.advanced.dataeditor.button.AddPushButton;
+import org.talend.commons.ui.swt.advanced.dataeditor.button.AddPushButtonForExtendedTable;
+import org.talend.commons.ui.swt.extended.table.ExtendedTableModel;
+import org.talend.commons.ui.swt.tableviewer.TableViewerCreator;
+import org.talend.commons.ui.swt.tableviewer.TableViewerCreatorColumn;
+import org.talend.commons.utils.data.bean.IBeanPropertyAccessors;
+import org.talend.core.model.process.INode;
+import org.talend.core.ui.metadata.editor.MetadataToolbarEditorView;
+import org.talend.designer.neo4j.data.Index;
+import org.talend.designer.neo4j.data.Relationship;
+import org.talend.designer.neo4j.ui.editor.MetadataColumnExt;
+
+public class RelationshipTableView extends AbstractDataTableEditorView<Relationship> {
+
+	public RelationshipTableView(Composite parentComposite, int mainCompositeStyle, INode component) {
+		super(parentComposite, mainCompositeStyle, new ExtendedTableModel<Relationship>());
+		addListeners();
+	}
+		
+	// TODO: Create relationship direction column
+	@Override
+	protected void createColumns(
+			TableViewerCreator<Relationship> tableViewerCreator, Table table) {
+		
+		TableViewerCreatorColumn<Relationship, String> column = new TableViewerCreatorColumn<>(tableViewerCreator);
+		column.setTitle("Type"); // TODO: Internationalize this
+		column.setModifiable(true);	
+		column.setWidth(115);
+		column.setBeanPropertyAccessors(new IBeanPropertyAccessors<Relationship, String>() {
+			
+			@Override
+			public void set(Relationship bean, String value) {
+				bean.setType(value);
+			}
+			
+			@Override
+			public String get(Relationship bean) {
+				return bean.getType() == null ? "" : bean.getType();
+			}
+		});
+		column.setCellEditor(new TextCellEditor(table));
+		
+		column = new TableViewerCreatorColumn<>(tableViewerCreator);
+		column.setTitle("Direction"); // TODO: Internationalize this
+		column.setModifiable(true);
+		column.setWidth(115);
+		column.setBeanPropertyAccessors(new IBeanPropertyAccessors<Relationship, String>() {
+
+			@Override
+			public String get(Relationship bean) {
+				return bean.getDirection() == null ? Relationship.Direction.OUTGOING.getName() : bean.getDirection().getName();
+			}
+
+			@Override
+			public void set(Relationship bean, String value) {
+				bean.setDirection(Relationship.Direction.getFromName(value));
+			}
+			
+		});
+		column.setCellEditor(createComboBoxCellEditor(table));
+		
+		column = new TableViewerCreatorColumn<>(tableViewerCreator);
+		column.setTitle("Index Name"); // TODO: Internationalize this
+		column.setModifiable(true);
+		column.setWidth(115);
+		column.setBeanPropertyAccessors(new IBeanPropertyAccessors<Relationship, String>() {
+
+			@Override
+			public String get(Relationship bean) {
+				return bean.getIndexName() == null ? "" : bean.getIndexName();
+			}
+
+			@Override
+			public void set(Relationship bean, String value) {
+				bean.setIndexName(value);
+			}
+		});
+		column.setCellEditor(new TextCellEditor(table));
+		
+		column = new TableViewerCreatorColumn<>(tableViewerCreator);
+		column.setTitle("Index Key"); // TODO: Internationalize this
+		column.setModifiable(true);
+		column.setWidth(115);
+		column.setBeanPropertyAccessors(new IBeanPropertyAccessors<Relationship, String>() {
+			
+			@Override
+			public void set(Relationship bean, String value) {
+				bean.setKey(value);
+			}
+			
+			@Override
+			public String get(Relationship bean) {
+				return bean.getKey() == null ? "" : bean.getKey(); 
+			}
+		});
+		column.setCellEditor(new TextCellEditor(table));
+		
+		column = new TableViewerCreatorColumn<>(tableViewerCreator);
+		column.setTitle("Index Value (empty for current row)"); // TODO: Internationalize this
+		column.setModifiable(true);
+		column.setWidth(115);
+		column.setBeanPropertyAccessors(new IBeanPropertyAccessors<Relationship, String>() {
+
+			@Override
+			public String get(Relationship bean) {
+				return bean.getValue() == null ? "" : bean.getValue();
+			}
+
+			@Override
+			public void set(Relationship bean, String value) {
+				bean.setValue(value);
+			}
+		});
+		column.setCellEditor(new TextCellEditor(table));
+	}
+
+	private ComboBoxViewerCellEditor createComboBoxCellEditor(Table table) {
+		ComboBoxViewerCellEditor cellEditor = new ComboBoxViewerCellEditor(table);
+		cellEditor.setContentProvider(new IStructuredContentProvider() {
+			
+			@Override
+			public void inputChanged(Viewer arg0, Object arg1, Object arg2) {
+			}
+			
+			@Override
+			public void dispose() {
+			}
+			
+			@Override
+			public Object[] getElements(Object arg0) {				
+				return (String[])arg0;
+			}
+		});
+		cellEditor.setLabelProvider(new LabelProvider() {
+			@Override
+			public String getText(Object element) {
+				return (String) element;
+			}
+		});
+		
+		cellEditor.setInput(Relationship.Direction.getNames());
+		cellEditor.setValue(Relationship.Direction.OUTGOING.getName());
+		return cellEditor;
+	}
+	
+	public void update(MetadataColumnExt ext) {
+		getTableViewerCreator().setInputList(ext.getData().getRelationships());
+	}
+
+	@Override
+	protected ExtendedToolbarView initToolBar() {
+		return new ParameterToolbarView<Relationship>(mainComposite, SWT.NONE, extendedTableViewer) {
+
+			@Override
+			protected AddPushButton createAddPushButton() {
+				// TODO Auto-generated method stub
+				return new ParameterAddButton<Relationship>(getToolbar(), getExtendedTableViewer(), Relationship.class);
+			}
+			
+		};
+	}
+}
