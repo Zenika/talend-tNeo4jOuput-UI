@@ -37,6 +37,8 @@ public class Neo4jComponent extends AbstractExternalNode {
 	
 	public static final String AUTO_INDEXED = "AUTO_INDEXED";
 	
+	public static final String CACHE_NODE = "CACHE_NODE";
+	
 	public static final String INDEX_NAMES = "INDEX_NAMES";
 	
 	private Neo4jMain neo4jMain; 

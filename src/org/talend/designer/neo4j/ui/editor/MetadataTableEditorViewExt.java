@@ -71,9 +71,9 @@ public class MetadataTableEditorViewExt extends MetadataTableEditorView {
 		configureIndexColumn(tableViewerCreator);
 		configureRelationshipColumn(tableViewerCreator);
 		configureAutoIndexColumn(tableViewerCreator, table);
+		configureCacheNodeColumn(tableViewerCreator, table);
 	}
-	
-	
+
 	private void configureIndexColumn(
 			TableViewerCreator<IMetadataColumn> tableViewerCreator) {
 		TableViewerCreatorColumn<IMetadataColumn, String> column = new TableViewerCreatorColumn<>(tableViewerCreator);
@@ -113,7 +113,7 @@ public class MetadataTableEditorViewExt extends MetadataTableEditorView {
 			public String get(IMetadataColumn bean) {
 				if (bean instanceof MetadataColumnExt) {
 					MetadataColumnExt columnExt = (MetadataColumnExt) bean;
-					return columnExt.getData().getRelationships() != null && columnExt.getData().getRelationships().size() > 0 ? "*" : ""; 
+					return columnExt.getData().getRelationships() != null && columnExt.getData().getRelationships().getRelationships().size() > 0 ? "*" : ""; 
 				}
 				return "";
 			}
@@ -145,6 +145,41 @@ public class MetadataTableEditorViewExt extends MetadataTableEditorView {
 			}
 		});
 		String title = "Auto indexed"; // TODO: Internationalize this
+		column.setTitle(title);
+		column.setToolTipHeader(title);
+		column.setModifiable(true);
+		column.setWidth(76);
+		column.setDisplayedValue("");
+		column.setTableColumnSelectionListener(new CheckColumnSelectionListener(column, tableViewerCreator));
+		column.setImageHeader(ImageProvider.getImage(EImage.CHECKED_ICON));
+		CheckboxTableEditorContent checkbox = new CheckboxTableEditorContent();
+		checkbox.setToolTipText(title);
+		column.setTableEditorContent(checkbox);
+	}
+	
+	private void configureCacheNodeColumn(
+			TableViewerCreator<IMetadataColumn> tableViewerCreator, Table table) {
+		TableViewerCreatorColumn<IMetadataColumn, Boolean> column = new TableViewerCreatorColumn<>(tableViewerCreator);
+		column.setBeanPropertyAccessors(new IBeanPropertyAccessors<IMetadataColumn, Boolean>() {
+
+			@Override
+			public Boolean get(IMetadataColumn bean) {
+				if (bean instanceof MetadataColumnExt) {
+					MetadataColumnExt columnExt = (MetadataColumnExt) bean;
+					return columnExt.getData().isCacheNode();
+				}
+				return false;
+			}
+
+			@Override
+			public void set(IMetadataColumn bean, Boolean value) {
+				if (bean instanceof MetadataColumnExt) {
+					MetadataColumnExt columnExt = (MetadataColumnExt) bean;
+					columnExt.getData().setCacheNode(value);
+				}
+			}
+		});
+		String title = "Cache node"; // TODO: Internationalize this
 		column.setTitle(title);
 		column.setToolTipHeader(title);
 		column.setModifiable(true);

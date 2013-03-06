@@ -106,6 +106,7 @@ public class UIManager {
 			Map<String, Object> value = new HashMap<String, Object>();
 			value.put(Neo4jComponent.COLUMN_NAME, ext.getLabel());
 			value.put(Neo4jComponent.AUTO_INDEXED, String.valueOf(ext.getData().isAutoIndexed()));
+			value.put(Neo4jComponent.CACHE_NODE, String.valueOf(ext.getData().isCacheNode()));
 			value.put(Neo4jComponent.INDEX_NAMES, ext.getData().inlineIndexNames());
 			map.add(value);
 		}

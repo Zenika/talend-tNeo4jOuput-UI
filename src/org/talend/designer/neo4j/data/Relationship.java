@@ -3,29 +3,22 @@ package org.talend.designer.neo4j.data;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Relationship {
+public class Relationship implements Cloneable{
 	
 	private String type;
 	
 	private Direction direction;
 	
-	private String indexName;
+	private Index index = new Index();
 	
-	private String key;
-	
-	private String value;
-
 	public Relationship() {
 		direction = Direction.OUTGOING;
 	}
 
-	private Relationship(String type, Direction direction, String indexName,
-			String key, String value) {
+	private Relationship(String type, Direction direction, Index index) {
 		this.type = type;
 		this.direction = direction;
-		this.indexName = indexName;
-		this.key = key;
-		this.value = value;
+		this.index = index;
 	}
 
 	public String getType() {
@@ -36,30 +29,6 @@ public class Relationship {
 		this.type = type;
 	}
 
-	public String getIndexName() {
-		return indexName;
-	}
-
-	public void setIndexName(String indexName) {
-		this.indexName = indexName;
-	}
-
-	public String getKey() {
-		return key;
-	}
-
-	public void setKey(String key) {
-		this.key = key;
-	}
-
-	public String getValue() {
-		return value;
-	}
-
-	public void setValue(String value) {
-		this.value = value;
-	}
-	
 	public Direction getDirection() {
 		return direction;
 	}
@@ -68,17 +37,22 @@ public class Relationship {
 		this.direction = direction;
 	}
 
+	public Index getIndex() {
+		return index;
+	}
+
+	public void setIndex(Index index) {
+		this.index = index;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result
 				+ ((direction == null) ? 0 : direction.hashCode());
-		result = prime * result
-				+ ((indexName == null) ? 0 : indexName.hashCode());
-		result = prime * result + ((key == null) ? 0 : key.hashCode());
+		result = prime * result + ((index == null) ? 0 : index.hashCode());
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
-		result = prime * result + ((value == null) ? 0 : value.hashCode());
 		return result;
 	}
 
@@ -91,37 +65,25 @@ public class Relationship {
 		if (getClass() != obj.getClass())
 			return false;
 		Relationship other = (Relationship) obj;
-		if (direction == null) {
-			if (other.direction != null)
-				return false;
-		} else if (!direction.equals(other.direction))
+		if (direction != other.direction)
 			return false;
-		if (indexName == null) {
-			if (other.indexName != null)
+		if (index == null) {
+			if (other.index != null)
 				return false;
-		} else if (!indexName.equals(other.indexName))
-			return false;
-		if (key == null) {
-			if (other.key != null)
-				return false;
-		} else if (!key.equals(other.key))
+		} else if (!index.equals(other.index))
 			return false;
 		if (type == null) {
 			if (other.type != null)
 				return false;
 		} else if (!type.equals(other.type))
 			return false;
-		if (value == null) {
-			if (other.value != null)
-				return false;
-		} else if (!value.equals(other.value))
-			return false;
 		return true;
 	}
 	@Override
 	public Relationship clone() {
-		return new Relationship(type, direction, indexName, key, value);
+		return new Relationship(type, direction, index.clone());
 	}
+	
 	public static enum Direction {
 		OUTGOING("Outgoing"), INCOMMING("Incomming");
 		

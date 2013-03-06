@@ -86,12 +86,12 @@ public class RelationshipTableView extends AbstractDataTableEditorView<Relations
 
 			@Override
 			public String get(Relationship bean) {
-				return bean.getIndexName() == null ? "" : bean.getIndexName();
+				return bean.getIndex().getName() == null ? "" : bean.getIndex().getName();
 			}
 
 			@Override
 			public void set(Relationship bean, String value) {
-				bean.setIndexName(value);
+				bean.getIndex().setName((value));
 			}
 		});
 		column.setCellEditor(new TextCellEditor(table));
@@ -104,12 +104,12 @@ public class RelationshipTableView extends AbstractDataTableEditorView<Relations
 			
 			@Override
 			public void set(Relationship bean, String value) {
-				bean.setKey(value);
+				bean.getIndex().setKey(value);
 			}
 			
 			@Override
 			public String get(Relationship bean) {
-				return bean.getKey() == null ? "" : bean.getKey(); 
+				return bean.getIndex().getKey() == null ? "" : bean.getIndex().getKey(); 
 			}
 		});
 		column.setCellEditor(new TextCellEditor(table));
@@ -122,12 +122,12 @@ public class RelationshipTableView extends AbstractDataTableEditorView<Relations
 
 			@Override
 			public String get(Relationship bean) {
-				return bean.getValue() == null ? "" : bean.getValue();
+				return bean.getIndex().getValue() == null ? "" : bean.getIndex().getValue();
 			}
 
 			@Override
 			public void set(Relationship bean, String value) {
-				bean.setValue(value);
+				bean.getIndex().setValue(value);
 			}
 		});
 		column.setCellEditor(new TextCellEditor(table));
@@ -163,7 +163,7 @@ public class RelationshipTableView extends AbstractDataTableEditorView<Relations
 	}
 	
 	public void update(MetadataColumnExt ext) {
-		getTableViewerCreator().setInputList(ext.getData().getRelationships());
+		getTableViewerCreator().setInputList(ext.getData().getRelationships().getRelationships());
 	}
 
 	@Override
