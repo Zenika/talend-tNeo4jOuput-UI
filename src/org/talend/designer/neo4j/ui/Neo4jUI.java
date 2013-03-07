@@ -123,12 +123,11 @@ public class Neo4jUI {
 			if (indexes != null) {				
 				tabFolderEditors.getInputIndexEditor().update((MetadataColumnExt) item.getData());
 			}
-			List<Relationship> relationships = ((MetadataColumnExt)item.getData()).getData().getRelationships().getRelationships();
+			List<Relationship> relationships = ((MetadataColumnExt)item.getData()).getData().getRelationships();
 			tabFolderEditors.getInputRelationshipEditor().getExtendedToolbar().getAddButton().getButton().setEnabled(true);
 			if (relationships != null) {				
 				tabFolderEditors.getInputRelationshipEditor().update((MetadataColumnExt) item.getData());
 			}
-			tabFolderEditors.setNeo4jData(((MetadataColumnExt)item.getData()).getData());
 		}
 	}
 

@@ -38,12 +38,6 @@ public class TabFolderEditors extends CTabFolder{
 	
 	private RelationshipTableView inputRelationshipEditor;
 	
-	private Neo4jData neo4jData = new Neo4jData();
-	
-	private Button cacheNodeCheckbox;
-	private Text typeText;
-	private Combo directionCombo;
-	
 	protected static final int VERTICAL_SPACING_FORM = 0;
 	
 	protected static final int WIDTH_BUTTON_PIXEL = 100;
@@ -75,11 +69,7 @@ public class TabFolderEditors extends CTabFolder{
 		SashForm sashFormRelationship = new SashForm(this, SWT.SMOOTH | SWT.VERTICAL | SWT.SHADOW_OUT);
 		sashFormRelationship.setLayout(new RowLayout(SWT.VERTICAL));
 		item.setControl(sashFormRelationship);
-		
-		createCacheNodeCheckbox(sashFormRelationship);
 		createRelationshipTableView(sashFormRelationship);
-		
-		sashFormRelationship.setWeights(new int[] {1, 2, 7});
 		
 		addListener(SWT.Selection, new Listener() {
 			
@@ -105,66 +95,6 @@ public class TabFolderEditors extends CTabFolder{
 		inputRelationshipEditor.getExtendedToolbar().getAddButton().getButton().setEnabled(false);
 	}
 
-	private void createCacheNodeCheckbox(SashForm sashFormRelationship) {
-		cacheNodeCheckbox = new Button(sashFormRelationship, SWT.CHECK);
-		cacheNodeCheckbox.setText("Create from cached node (Advanced option)");
-		cacheNodeCheckbox.setSelection(neo4jData.getRelationships().isFromCache());
-		cacheNodeCheckbox.setData(neo4jData.getRelationships().isFromCache());
-		cacheNodeCheckbox.addListener(SWT.Selection, new Listener() {
-			
-			@Override
-			public void handleEvent(Event arg0) {
-				neo4jData.getRelationships().setFromCache((!neo4jData.getRelationships().isFromCache()));
-				enableOrDisableRelationTable();
-			}
-		});
-		Composite form = new Composite(sashFormRelationship, SWT.NONE);
-		RowLayout layout = new RowLayout();
-		layout.wrap = true;
-		layout.pack = true;
-		form.setLayout(layout);
-		
-		Label typeLabel = new Label(form, SWT.NONE);
-		typeLabel.setText("Type: ");
-		
-		typeText = new Text(form, SWT.BORDER);
-		String text = neo4jData.getRelationships().getRelationship().getType() == null ? "" : neo4jData.getRelationships().getRelationship().getType();
-		typeText.setText(text);
-		typeText.addFocusListener(new FocusListener() {			
-			@Override
-			public void focusLost(FocusEvent arg0) {
-				neo4jData.getRelationships().getRelationship().setType(typeText.getText());
-			}			
-			@Override
-			public void focusGained(FocusEvent arg0) {
-			}
-		});
-		
-		Label directionLabel = new Label(form, SWT.NONE);
-		directionLabel.setText("Direction: ");
-		
-		directionCombo = new Combo(form, SWT.NONE);
-		directionCombo.setData(neo4jData.getRelationships().getRelationship().getDirection().getName());
-		directionCombo.setItems(Relationship.Direction.getNames());
-		directionCombo.addListener(SWT.Selection, new Listener() {
-			@Override
-			public void handleEvent(Event arg0) {
-				Direction direction = Direction.getFromName(directionCombo.getItem(directionCombo.getSelectionIndex()));
-				neo4jData.getRelationships().getRelationship().setDirection(direction);
-			}
-		});
-	}
-	
-	@SuppressWarnings("rawtypes")
-	private void enableOrDisableRelationTable() {
-		boolean fromCache = neo4jData.getRelationships().isFromCache();
-		inputRelationshipEditor.getTable().setEnabled(!fromCache);
-		((ParameterToolbarView)inputRelationshipEditor.getExtendedToolbar()).setEnable(!fromCache);
-		
-		typeText.setEnabled(fromCache);
-		directionCombo.setEnabled(fromCache);
-	}
-	
 	public IndexTableView getInputIndexEditor() {
 		return inputIndexEditor;
 	}
@@ -173,14 +103,4 @@ public class TabFolderEditors extends CTabFolder{
 		return inputRelationshipEditor;
 	}
 
-	public void setNeo4jData(Neo4jData neo4jData) {
-		this.neo4jData = neo4jData;
-		cacheNodeCheckbox.setData(neo4jData.getRelationships().isFromCache());
-		cacheNodeCheckbox.setSelection(neo4jData.getRelationships().isFromCache());
-		String text = neo4jData.getRelationships().getRelationship().getType() == null ? "" : neo4jData.getRelationships().getRelationship().getType();
-		typeText.setText(text);
-		directionCombo.setData(neo4jData.getRelationships().getRelationship().getDirection());
-		enableOrDisableRelationTable();
-	}
-	
 }

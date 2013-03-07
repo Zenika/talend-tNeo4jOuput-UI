@@ -9,9 +9,8 @@ public class Neo4jData implements Cloneable, Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private boolean autoIndexed;
-	private boolean cacheNode;
 	private List<Index> indexes = new ArrayList<>();
-	private Relationships relationships = new Relationships();
+	private List<Relationship> relationships = new ArrayList<>();
 	
 	public boolean isAutoIndexed() {
 		return autoIndexed;
@@ -25,25 +24,18 @@ public class Neo4jData implements Cloneable, Serializable {
 	public void setIndexes(List<Index> indexes) {
 		this.indexes = indexes;
 	}
-	public boolean isCacheNode() {
-		return cacheNode;
-	}
-	public void setCacheNode(boolean cacheNode) {
-		this.cacheNode = cacheNode;
-	}
-	public Relationships getRelationships() {
+	
+	public List<Relationship> getRelationships() {
 		return relationships;
 	}
-	public void setRelationships(Relationships relationships) {
+	public void setRelationships(List<Relationship> relationships) {
 		this.relationships = relationships;
 	}
-	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + (autoIndexed ? 1231 : 1237);
-		result = prime * result + (cacheNode ? 1231 : 1237);
 		result = prime * result + ((indexes == null) ? 0 : indexes.hashCode());
 		result = prime * result
 				+ ((relationships == null) ? 0 : relationships.hashCode());
@@ -59,8 +51,6 @@ public class Neo4jData implements Cloneable, Serializable {
 			return false;
 		Neo4jData other = (Neo4jData) obj;
 		if (autoIndexed != other.autoIndexed)
-			return false;
-		if (cacheNode != other.cacheNode)
 			return false;
 		if (indexes == null) {
 			if (other.indexes != null)
@@ -85,9 +75,14 @@ public class Neo4jData implements Cloneable, Serializable {
 			}
 			newData.setIndexes(indexes);
 		}
-		newData.setRelationships(relationships.clone());
+		if (this.relationships != null) {
+			List<Relationship> relationships = new ArrayList<>(this.relationships.size());
+			for (Relationship relationship : this.relationships) {
+				relationships.add(relationship.clone());
+			}
+			newData.setRelationships(relationships);
+		}		
 		newData.setAutoIndexed(autoIndexed);
-		newData.setCacheNode(cacheNode);
 		return newData;
 	}
 	
@@ -102,7 +97,7 @@ public class Neo4jData implements Cloneable, Serializable {
 				builder.append(",");
 			}
 		}
-		if (indexes.size() > 0 && relationships.getRelationships().size() > 0) {
+		if (indexes.size() > 0 && relationships.size() > 0) {
 			builder.append(",");
 		}
 		Iterator<Relationship> itRelationship = relationships.iterator();		

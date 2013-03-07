@@ -163,7 +163,7 @@ public class RelationshipTableView extends AbstractDataTableEditorView<Relations
 	}
 	
 	public void update(MetadataColumnExt ext) {
-		getTableViewerCreator().setInputList(ext.getData().getRelationships().getRelationships());
+		getTableViewerCreator().setInputList(ext.getData().getRelationships());
 	}
 
 	@Override
